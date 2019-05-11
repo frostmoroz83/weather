@@ -30,21 +30,33 @@ class App extends React.Component {
             const api_url = await	fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}`);
             const data = await api_url.json();
             console.log(data);
-            let sunset = data.sys.sunset;
-            let date = new Date();
-            date.setTime(sunset);
-            let my_hours = date.getHours() + 16;
-            let sunset_date = my_hours  + ":" + date.getMinutes() + ":" + date.getSeconds();
+            if (data.cod == 200) {
 
-            let temp_c = Math.floor(data.main.temp -  273.15);
-            this.setState({
-                temp: temp_c,
-                city: data.name,
-                country: data.sys.country,
-                pressure: data.main.pressure,
-                sunset: sunset_date,
-                error: undefined
-            });
+                let sunset = data.sys.sunset;
+                let date = new Date();
+                date.setTime(sunset);
+                let my_hours = date.getHours() + 16;
+                let sunset_date = my_hours  + ":" + date.getMinutes() + ":" + date.getSeconds();
+
+                let temp_c = Math.floor(data.main.temp -  273.15);
+                this.setState({
+                    temp: temp_c,
+                    city: data.name,
+                    country: data.sys.country,
+                    pressure: data.main.pressure,
+                    sunset: sunset_date,
+                    error: undefined
+                });
+            } else {
+                this.setState ({
+                    temp: undefined,
+                    city: undefined,
+                    country: undefined,
+                    pressure: undefined,
+                    sunset: undefined,
+                    error: `Возможно  ${city} города нет, или ошибка в названии`
+                });
+            }
 
         } else {
             this.setState ({
@@ -67,10 +79,10 @@ class App extends React.Component {
                 <div className="main">
                     <div className="container">
                         <div className="row">
-                            <div className="col-sm-5 info">
+                            <div className="col-lg-5 col-md-12 info">
                                 <Info/>
                             </div>
-                            <div className="col-sm-7 form">
+                            <div className="col-lg-7 col-md-12 form">
                                 <Form weatherMethod={this.gettingWeather}/>
                                 <Weather
                                     temp={this.state.temp}
